@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TweetController;
+use App\Http\Controllers\FollowsController;
 use App\Http\Controllers\ProfilesController;
 
 /*
@@ -23,8 +24,10 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/tweets', [TweetController::class, 'index'])->name('home');
     Route::post('/tweets', [TweetController::class, 'store']);
+
+    Route::post('/profiles/{user:name}/follow', [FollowsController::class, 'store']);
 });
 
-Route::get('/profiles/{user}', [ProfilesController::class, 'show'])->name('profile');
+Route::get('/profiles/{user:name}', [ProfilesController::class, 'show'])->name('profile');
 
 Auth::routes();
