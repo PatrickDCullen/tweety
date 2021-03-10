@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Followable;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use App\Followable;
 
 class User extends Authenticatable
 {
@@ -45,7 +46,7 @@ class User extends Authenticatable
 
     public function setPasswordAttribute($value)
     {
-        $this->attributes['password'] = bcrypt($value);
+        $this->attributes['password'] = Hash::needsRehash($value) ? Hash::make($value) : $value;
     }
 
     public function timeline()
@@ -54,7 +55,7 @@ class User extends Authenticatable
 
         return Tweet::whereIn('user_id', $friends)
             ->orWhere('user_id', $this->id)
-            ->latest()->get();
+            ->latest()->paginate(50);
     }
 
     public function tweets()
